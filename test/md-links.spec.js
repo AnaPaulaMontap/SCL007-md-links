@@ -1,7 +1,6 @@
 const mdLinks = require('../index.js');
 
-
-describe('mdLinks', () => {
+describe(mdLinks, () => {
 
   it('Debería ingresar un argumento', () => {
     console.log('FIX ME!');

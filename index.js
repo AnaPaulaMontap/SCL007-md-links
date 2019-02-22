@@ -7,7 +7,9 @@
 let fs = require("fs")
 let path = require("path")
 let markdownLinkExtractor = require('markdown-link-extractor');
-let http = require('https')
+let https = require('https')
+let http = require('http')
+let chalk = require('chalk')
 let file = process.argv[2]
 let linkArr = []
 
@@ -15,31 +17,58 @@ let linkArr = []
 
 const mdLinks = (file) => {
 
-fs.readFile(file, function(error , buf){ // LEE EL ARCHIVO
+fs.readFile(file, function(error , buf){  // LEE EL ARCHIVO
+    
     if (error){
         console.error(error)
     }
     if(path.extname(file) ===  ".md") {
-      linkArr = markdownLinkExtractor(buf.toString()); // TRANSFORMA EL BUFFER EN STRING Y EXTRAE LOS LINKS
-     // links.forEach(function (link) { // RECORRE LOS LINK Y LOS EXTRAE      
-     //console.log(linkArr);
-     validation(linkArr)
+      let lineFile = buf.toString().split('\n')
+      for(i=0; i<lineFile.length; i++){
+       let links = markdownLinkExtractor( lineFile[i])
+       
+       if(links.length >0){
+        // console.log(links)
+        for (a=0; a<links.length; a++){
+           linkArr.push({
+             line: i+1,
+             url: links[a], 
+           })
+         }       
+       }
+      }   
+     
+     console.log(`Existen ${linkArr.length} links en este documento`) 
+      validation(linkArr) 
     }
     
   })
 }
 
-const validation = (linkArr) =>{  
+const validation = (linkArr) => {
+ 
+  linkArr.forEach((link) => {
+    if (link.url.substring(0, 5) == 'https') {
+      https.get(link.url, (response) => {
 
-  let url = linkArr[0]
-  http.get(url, function(response){
-    if(response.statusCode === 200){
-      console.log(url,'status ok')
+        if (response.statusCode === 200) {
+          console.log(link.line +' '+ link.url +' '+ chalk.green (`OK`))
+        }
+      }).on('error', (e) => {
+        console.error(link.line +' '+ link.url +' '+ chalk.red(`Error: ${e.message}`));
+      })
+    } else {
+      http.get(link.url, (response) => {
+        if (response.statusCode === 200) {
+          console.log(link.line +' '+ link.url +' '+ chalk.green(`OK`))
+        }
+        
+      }).on('error', (e) => {
+        console.error( link.line +' '+ link.url +' '+ chalk.red(`Error: ${e.message}`));
+      })
     }
-    response.on('error', function(error){
-       console.error(error)
-    })
-}) 
+  })
+
 }
 
   mdLinks(file)

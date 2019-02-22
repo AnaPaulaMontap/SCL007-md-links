@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/AnaPaulaMontap/SCL007-md-links#readme",
   "dependencies": {
+    "chalk": "^2.4.2",
     "markdown-link-extractor": "^1.2.0"
   }
 }
