@@ -13,22 +13,39 @@ let argumentsUser = process.argv[2]
 
 const mdLinks= {}
 
-mdLinks.readDirectory = (argumentsUser) => {
 
-  fs.readdir( argumentsUser, function( error , list){ 
-    if (error){
-        console.error(error)
+
+mdLinks.readDirectory = (argumentsUser) => { 
+  let files =[]
+ return new Promise  ((resolve, reject)=>{
+  fs.lstat(argumentsUser, (err, stats) => { 
+    
+    if (err) {
+      return console.error(reject);
     }
-    list.forEach(function(files){
-       if(fs.lstatSync(files).isDirectory()) {
-           return mdLinks.readDirectory (files)
-        }if(fs.lstatSync(files).isFile()){
-            return mdLinks.readfile(files)
-
+    if(stats.isDirectory() === true) {     
+      fs.readdir(argumentsUser,(err,itemList) => {
+        if (err) {
+          return console.error(err.message);
         }
-    })
-    })
-  }  
+
+        let holi = itemList.map((item) => path.resolve(argumentsUser,item))
+        
+       holi.forEach(element => {
+        resolve(element)
+          // mdLinks.readDirectory(element)
+        });
+      }); 
+ 
+} 
+})
+})
+}
+
+mdLinks.readDirectory(argumentsUser)
+.then(data =>{
+ console.log(data)
+})
   
 
 mdLinks.readfile = (file) => {
@@ -104,14 +121,14 @@ mdLinks.validation = (linkArr) => {
 
 
 
-
-  mdLinks.readfile(file)
-  .then(data =>{
-    return mdLinks.validation(data)
-  })
-  .then(lala =>{
-    console.log(lala)
-  })
-  
-  
-  
+/*
+.then (dataVerify =>{
+ mdLinks.validation(dataVerify)
+})
+.then(dataResult =>{
+  console.log(dataResult)
+})
+.catch(error =>{
+  console.error (error.message)
+})
+*/
