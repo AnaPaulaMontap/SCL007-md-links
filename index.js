@@ -5,6 +5,8 @@
 let fs = require("fs")
 let path = require("path")
 let markdownLinkExtractor = require('markdown-link-extractor');
+let https = require('https');
+let http = require('http');
 let fetch = require('node-fetch')
 let chalk = require('chalk')
 let argumentsUser = process.argv[2]
@@ -73,11 +75,12 @@ return new Promise ((resolve, reject)=>{
         return reject(error)
     }
       let lineFile = buf.toString().split('\n')
+      
       for(i=0; i<lineFile.length; i++){
        let links = markdownLinkExtractor( lineFile[i])
        
        if(links.length >0){
-        // console.log(links)
+         
         for (a=0; a<links.length; a++){
            linkArr.push({
              line: i+1,
@@ -85,7 +88,8 @@ return new Promise ((resolve, reject)=>{
            })
          }       
        }
-      }       
+      } 
+            
      //console.log('Existen' +' '+ chalk.magenta(linkArr.length + 'links')+ ' '+'en este documento') 
     //validation(linkArr) 
     return resolve(linkArr)
@@ -94,36 +98,58 @@ return new Promise ((resolve, reject)=>{
  })
 }
 
-mdLinks.validation = (linkArr) => {
-  return new Promise ((resolve, reject)=>{
-    let raquel = linkArr
-     //console.log(linkArr)
-   // raquel.forEach((link) => { 
-   for (let i = 0; i< raquel.length; i++){  
-        //console.log(raquel[i].url)
-   if(raquel[i].url.substring(0,4) === 'http'){
-     fetch(raquel[i].url)
-      .then( data => {
-          if(data.status=== 200){
-            return resolve (raquel[i].validate = 'OK')
-          }else if ((data.status !== 200)){
-            return resolve (raquel[i].validate = 'URL INVALIDA')
-          }else{
-            return resolve (raquel[i].validate = 'NO CORRESPONDE A URL')
-          }
-      })
-      .catch(error =>{
-          return reject(raquel[i].validate = 'URL INVALIDA')
-      })
-    }else{
-      return resolve (raquel[i].validate = 'NO CORRESPONDE A URL')
-    } 
-    }
+mdLinks.urlExtractor=(linkArr)=>{
+return new Promise ((resolve, reject)=>{  
+  
+ let pruebaurl= linkArr.map(element =>{
+    return element.url
+  })
+
+  for(i=0; i<pruebaurl.length; i++){
+   if(pruebaurl[i].substring(0,4) !== 'http' ){
+     return resolve (pruebaurl[i].validate = pruebaurl[i] +"/"+ 'NO CORRESPONDE A URL')
+   }
+   else{
+    return resolve(pruebaurl[i])
+   }   
+  }//return reject(pruebaurl[i]='error')
 })
 }
 
+mdLinks.validation = (linkArr) => {  
+  
+  
+ // console.log(prueba5)
+}
+  /*
+  return new Promise ((resolve, reject)=>{
+ /* let prueba5= linkArr.map(element =>{
+    return element.url
+  })
 
-
+  for (let i = 0; i<element.length; i++){     
+    if(element[i].substring(0,4) === 'http') {
+     fetch(linkArr['url'])
+      .then( data => {
+          if(data.status === 200){
+            return resolve (element[i].validate = 'OK')
+          }else if (data.status !== 200){
+            return resolve (element[i].validate = 'URL INVALIDA')
+          }else{
+            return resolve (element[i].validate = 'NO CORRESPONDE A URL VALIDA')
+          }        
+      })
+      .catch(error =>{
+          return reject(error)
+      }) /*
+    }else{
+      return resolve (element[i].validate = 'NO CORRESPONDE A URL')
+    }
+    
+  }
+  })
+  }
+*/
 mdLinks.readDirectory(argumentsUser)
   .then(data => {
     return mdLinks.fileExtractor(data) 
@@ -134,36 +160,22 @@ mdLinks.readDirectory(argumentsUser)
     })    
   })
   .then(data2=>{
-    return Promise.all(data2)
+    return Promise.all(data2).catch(console.error)
   })
   .then(data3=>{
-    return data3.filter( element => {
-      return element !== []
-      });
-  })
-  .then(data4 =>{    
-    return data4.map(element =>{
-      return mdLinks.validation(element) 
+    return data3.map(element =>{
+      return mdLinks.urlExtractor(element) 
     }) 
   })
-  .then(data5=>{
-    return data5.filter( element => {
-      return element !== []
-      });
-  })
   .then(data6=>{
-    //console.log(data5)
-    return Promise.all(data6)
-  })
-  .then(data7=>{
-    console.log(data8)
+    console.log(data6)
   })
   
   
 
 
 
-/*
+
          /*
     if (raquel[i].url.substring(0, 5) == 'https') {
       https.get(raquel[i].url, (response) => {
