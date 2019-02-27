@@ -5,8 +5,7 @@
 let fs = require("fs")
 let path = require("path")
 let markdownLinkExtractor = require('markdown-link-extractor');
-let https = require('https')
-let http = require('http')
+let fetch = require('node-fetch')
 let chalk = require('chalk')
 let argumentsUser = process.argv[2]
 
@@ -15,38 +14,56 @@ const mdLinks= {}
 
 
 
-mdLinks.readDirectory = (argumentsUser) => { 
-  let files =[]
- return new Promise  ((resolve, reject)=>{
-  fs.lstat(argumentsUser, (err, stats) => { 
-    
-    if (err) {
-      return console.error(reject);
-    }
-    if(stats.isDirectory() === true) {     
-      fs.readdir(argumentsUser,(err,itemList) => {
-        if (err) {
-          return console.error(err.message);
-        }
+mdLinks.readDirectory = (argumentsUser) => {
+  return new Promise((resolve, reject) => {
+    fs.lstat(argumentsUser, (err, stats) => {
 
-        let holi = itemList.map((item) => path.resolve(argumentsUser,item))
-        
-       holi.forEach(element => {
-        resolve(element)
-          // mdLinks.readDirectory(element)
+      if (err) {
+        return reject(err);
+      }
+      if (stats.isDirectory() === true) {
+        return fs.readdir(argumentsUser, (err, itemList) => {
+          if (err) {
+            return reject(err);
+          }
+
+          let holi = itemList.map((item) => path.resolve(argumentsUser, item))
+
+          const res = holi.map(element => {
+            const prom = mdLinks.readDirectory(element);
+            //console.log(prom);
+            return prom;
+          });
+
+          Promise.all(res).then(resolve).catch(console.error);
         });
-      }); 
- 
-} 
-})
-})
+
+      }else if(stats.isFile() === true) {
+        return resolve(argumentsUser)
+      }else{
+        resolve([]);
+      }
+    })
+
+  })
+
 }
 
-mdLinks.readDirectory(argumentsUser)
-.then(data =>{
- console.log(data)
-})
-  
+mdLinks.fileExtractor =(arr) =>{
+  return new Promise((resolve, reject) => {    
+       let hello = arr.toString().split(',')
+       let file =hello.filter( element => {
+       return element !== ""
+       });
+       let file2 = file.filter(element => {
+         if(path.extname(element)===".md"){
+           return element
+         }          
+       })
+       return resolve(file2)  
+       
+    })
+}
 
 mdLinks.readfile = (file) => {
 return new Promise ((resolve, reject)=>{
@@ -55,7 +72,6 @@ return new Promise ((resolve, reject)=>{
     if (error){
         return reject(error)
     }
-    if(path.extname(file) ===  ".md") {
       let lineFile = buf.toString().split('\n')
       for(i=0; i<lineFile.length; i++){
        let links = markdownLinkExtractor( lineFile[i])
@@ -69,24 +85,86 @@ return new Promise ((resolve, reject)=>{
            })
          }       
        }
-      }   
-     
+      }       
      //console.log('Existen' +' '+ chalk.magenta(linkArr.length + 'links')+ ' '+'en este documento') 
     //validation(linkArr) 
-    }
     return resolve(linkArr)
   })
+ 
  })
 }
 
-
 mdLinks.validation = (linkArr) => {
   return new Promise ((resolve, reject)=>{
-    let raquel = linkArr 
-
+    let raquel = linkArr
+     //console.log(linkArr)
    // raquel.forEach((link) => { 
-     for (let i = 0; i< raquel.length; i++){  
-         //console.log(raquel[i].url)
+   for (let i = 0; i< raquel.length; i++){  
+        //console.log(raquel[i].url)
+   if(raquel[i].url.substring(0,4) === 'http'){
+     fetch(raquel[i].url)
+      .then( data => {
+          if(data.status=== 200){
+            return resolve (raquel[i].validate = 'OK')
+          }else if ((data.status !== 200)){
+            return resolve (raquel[i].validate = 'URL INVALIDA')
+          }else{
+            return resolve (raquel[i].validate = 'NO CORRESPONDE A URL')
+          }
+      })
+      .catch(error =>{
+          return reject(raquel[i].validate = 'URL INVALIDA')
+      })
+    }else{
+      return resolve (raquel[i].validate = 'NO CORRESPONDE A URL')
+    } 
+    }
+})
+}
+
+
+
+mdLinks.readDirectory(argumentsUser)
+  .then(data => {
+    return mdLinks.fileExtractor(data) 
+  })
+  .then(data1=>{
+    return data1.map(element =>{
+      return mdLinks.readfile(element) 
+    })    
+  })
+  .then(data2=>{
+    return Promise.all(data2)
+  })
+  .then(data3=>{
+    return data3.filter( element => {
+      return element !== []
+      });
+  })
+  .then(data4 =>{    
+    return data4.map(element =>{
+      return mdLinks.validation(element) 
+    }) 
+  })
+  .then(data5=>{
+    return data5.filter( element => {
+      return element !== []
+      });
+  })
+  .then(data6=>{
+    //console.log(data5)
+    return Promise.all(data6)
+  })
+  .then(data7=>{
+    console.log(data8)
+  })
+  
+  
+
+
+
+/*
+         /*
     if (raquel[i].url.substring(0, 5) == 'https') {
       https.get(raquel[i].url, (response) => {
       //console.log(raquel[i].url)
@@ -102,7 +180,7 @@ mdLinks.validation = (linkArr) => {
         
       
       })
-    } else {
+    } else if(raquel[i].url.substring(0, 4) == 'http'){
       http.get(raquel[i].url, (response) => {
         if (response.statusCode === 200) {
           //console.log('linea:'+link.line +' '+'url:'+ link.url +' '+ chalk.green (`Status: OK`))
@@ -113,15 +191,11 @@ mdLinks.validation = (linkArr) => {
         //console.log( link.line +' '+ link.url +' '+ chalk.red(`Error: ${e.message}`));
         raquel[i].validate = 'ERROR'
       })
+    }else{
+      raquel[i].validate = 'null'
     }
-  }
-  return resolve(raquel)
-})
-}
-
-
-
-/*
+   
+  //}  
 .then (dataVerify =>{
  mdLinks.validation(dataVerify)
 })
