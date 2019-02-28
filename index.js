@@ -27,7 +27,7 @@ mdLinks.readDirectory = (argumentsUser) => {
 
           let holi = itemList.map((item) => path.resolve(argumentsUser, item))
 
-          const res = holi.map(element => {
+            const res = holi.map(element => {
             const prom = mdLinks.readDirectory(element);
             //console.log(prom);
             return prom;
@@ -84,7 +84,7 @@ return new Promise ((resolve, reject)=>{
            linkArr.push({
              file: file,
              line: i+1,
-             url: links[a],
+             url: links[a].href,
              text: links[a].text, 
            })
          }       
@@ -96,8 +96,8 @@ return new Promise ((resolve, reject)=>{
 }
 
 mdLinks.validation = (linkArr) => {
-  
- return new Promise ((resolve, reject)=>{   
+ // console.log(linkArr)
+  return new Promise ((resolve, reject)=>{   
     if(linkArr.url.substring(0,4) === 'http') {         
      fetch(linkArr.url)
       .then( data => {
@@ -125,7 +125,6 @@ const mdLinksFinal = (argumentsUser) => {
 return new Promise ((resolve, reject)=>{   
 mdLinks.readDirectory(argumentsUser)
   .then(data => {
-    console.log('Cargando...')
     return mdLinks.fileExtractor(data) 
   })
   .then(data1=>{
@@ -178,6 +177,11 @@ mdLinks.printStats = (link) =>{
   console.log(chalk.magenta('Total Links:',totalLinks,'\n','Links Ok:',linksOk,'\n','Broken Links:',linksFail))
   
 }
+mdLinks.printText = (link) =>{  
+  for(let i=0; i<link.length; i++){  
+    console.log(chalk.blue(link[i].line), chalk.cyan(link[i].url), chalk.green(link[i].text))
+  }
+}
 
 if(require.main === module){
   let arrOption = [];
@@ -196,9 +200,12 @@ if(require.main === module){
      if( arrOption.indexOf('--validate') != -1){
         mdLinks.print(data)
      }
-     if (arrOption.indexOf('--stats') !== -1){
-        mdLinks.printStats(data)
-     }
+      if (arrOption.indexOf('--text') !== -1){
+      mdLinks.printText(data)
+    }
+    if (arrOption.indexOf('--stats') !== -1){
+      mdLinks.printStats(data)
+   }
    })
     
 }
