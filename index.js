@@ -1,12 +1,8 @@
 #!/usr/bin/env node 
-//module.exports = mdLinks
-
 
 let fs = require("fs")
 let path = require("path")
 let markdownLinkExtractor = require('markdown-link-extractor');
-let https = require('https');
-let http = require('http');
 let fetch = require('node-fetch')
 let chalk = require('chalk')
 let argumentsUser = process.argv[2]
@@ -37,7 +33,10 @@ mdLinks.readDirectory = (argumentsUser) => {
             return prom;
           });
 
-          Promise.all(res).then(resolve).catch(console.error);
+          Promise.all(res).then(resolve).catch(error => {
+            console.log(error.message);
+            console.error(error.stack)
+        });
         });
 
       }else if(stats.isFile() === true) {
@@ -68,6 +67,7 @@ mdLinks.fileExtractor =(arr) =>{
 }
 
 mdLinks.readfile = (file) => {
+ // console.log(file)
 return new Promise ((resolve, reject)=>{
   fs.readFile(file, function(error , buf){ // LEE EL ARCHIVO
     let linkArr = []
@@ -79,79 +79,53 @@ return new Promise ((resolve, reject)=>{
       for(i=0; i<lineFile.length; i++){
        let links = markdownLinkExtractor( lineFile[i])
        
-       if(links.length >0){
-         
+       if(links.length > 0){         
         for (a=0; a<links.length; a++){
            linkArr.push({
+             file: file,
              line: i+1,
-             url: links[a], 
+             url: links[a],
+             text: links[a].text, 
            })
          }       
        }
-      } 
-            
-     //console.log('Existen' +' '+ chalk.magenta(linkArr.length + 'links')+ ' '+'en este documento') 
-    //validation(linkArr) 
+      }          
     return resolve(linkArr)
   })
- 
  })
 }
 
-mdLinks.urlExtractor=(linkArr)=>{
-return new Promise ((resolve, reject)=>{  
+mdLinks.validation = (linkArr) => {
   
- let pruebaurl= linkArr.map(element =>{
-    return element.url
-  })
-
-  for(i=0; i<pruebaurl.length; i++){
-   if(pruebaurl[i].substring(0,4) !== 'http' ){
-     return resolve (pruebaurl[i].validate = pruebaurl[i] +"/"+ 'NO CORRESPONDE A URL')
-   }
-   else{
-    return resolve(pruebaurl[i])
-   }   
-  }//return reject(pruebaurl[i]='error')
-})
-}
-
-mdLinks.validation = (linkArr) => {  
-  
-  
- // console.log(prueba5)
-}
-  /*
-  return new Promise ((resolve, reject)=>{
- /* let prueba5= linkArr.map(element =>{
-    return element.url
-  })
-
-  for (let i = 0; i<element.length; i++){     
-    if(element[i].substring(0,4) === 'http') {
-     fetch(linkArr['url'])
+ return new Promise ((resolve, reject)=>{   
+    if(linkArr.url.substring(0,4) === 'http') {         
+     fetch(linkArr.url)
       .then( data => {
           if(data.status === 200){
-            return resolve (element[i].validate = 'OK')
+            return resolve ({...linkArr, validate : 'OK'})
           }else if (data.status !== 200){
-            return resolve (element[i].validate = 'URL INVALIDA')
+            return resolve ({...linkArr, validate :'URL INVALIDA'})
           }else{
-            return resolve (element[i].validate = 'NO CORRESPONDE A URL VALIDA')
+            return resolve ({...linkArr, validate : 'NO CORRESPONDE A URL VALIDA'})
           }        
       })
       .catch(error =>{
-          return reject(error)
-      }) /*
+          return resolve({...linkArr, validate :'NO CORRESPONDE A URL VALIDA'})
+      }) 
     }else{
-      return resolve (element[i].validate = 'NO CORRESPONDE A URL')
+      return resolve ({...linkArr, validate :'NO CORRESPONDE A URL'})
     }
-    
-  }
   })
   }
-*/
+
+
+// Se ejecutan las promesas  exportable)
+
+const mdLinksFinal = (argumentsUser) => {
+return new Promise ((resolve, reject)=>{   
 mdLinks.readDirectory(argumentsUser)
   .then(data => {
+    console.log('Cargando...')
     return mdLinks.fileExtractor(data) 
   })
   .then(data1=>{
@@ -160,61 +134,80 @@ mdLinks.readDirectory(argumentsUser)
     })    
   })
   .then(data2=>{
-    return Promise.all(data2).catch(console.error)
+    return Promise.all(data2)
   })
   .then(data3=>{
-    return data3.map(element =>{
-      return mdLinks.urlExtractor(element) 
+    let arreglo = [];
+    for (let i=0; i<data3.length; i++){
+        arreglo.push( data3[i].filter(element=>{
+          return element !== []
+        }))
+    }
+   return arreglo.reduce((acc,current)=>{
+     return acc.concat(current)
+   })
+  })
+  .then(data4=>{
+    return data4.map(element =>{
+      return mdLinks.validation(element) 
     }) 
   })
-  .then(data6=>{
-    console.log(data6)
-  })
-  
-  
-
-
-
-
-         /*
-    if (raquel[i].url.substring(0, 5) == 'https') {
-      https.get(raquel[i].url, (response) => {
-      //console.log(raquel[i].url)
-        if (response.statusCode === 200) {
-          
-          //console.log('linea:'+raquel.line +' '+'url:'+ link.url +' '+ chalk.green (`Status: OK`))
-           raquel[i].validate = 'OK'
-           //console.log(raquel[i].validate)
-        }
-      }).on('error', (e) => {
-        //console.log(link.line +' '+ link.url +' '+ chalk.red(`Error: ${e.message}`)
-        raquel[i].validate = 'ERROR'
-        
+  .then(data5=>{
+      return resolve( Promise.all(data5) )
       
-      })
-    } else if(raquel[i].url.substring(0, 4) == 'http'){
-      http.get(raquel[i].url, (response) => {
-        if (response.statusCode === 200) {
-          //console.log('linea:'+link.line +' '+'url:'+ link.url +' '+ chalk.green (`Status: OK`))
-          raquel[i].validate = 'OK'
-        }
-        
-      }).on('error', (e) => {
-        //console.log( link.line +' '+ link.url +' '+ chalk.red(`Error: ${e.message}`));
-        raquel[i].validate = 'ERROR'
-      })
-    }else{
-      raquel[i].validate = 'null'
-    }
-   
-  //}  
-.then (dataVerify =>{
- mdLinks.validation(dataVerify)
+  }).catch(error => {
+    console.log(error.message);
+    console.error(error.stack)
+  })
 })
-.then(dataResult =>{
-  console.log(dataResult)
-})
-.catch(error =>{
-  console.error (error.message)
-})
-*/
+}
+
+mdLinks.print = (link) =>{
+  for(let i=0; i<link.length; i++){  
+    console.log(chalk.magenta(link[i].file), chalk.green(link[i].line), chalk.cyan(link[i].url), chalk.blue(link[i].validate))
+  }
+}
+mdLinks.printStats = (link) =>{
+  
+  let totalLinks = link.length;
+  let linksOk = link.filter(element=>{
+    return element.validate ==="OK"
+  }).length;
+  let linksFail = totalLinks - linksOk;
+
+  console.log(chalk.magenta('Total Links:',totalLinks,'\n','Links Ok:',linksOk,'\n','Broken Links:',linksFail))
+  
+}
+
+if(require.main === module){
+  let arrOption = [];
+  let titanic;
+    
+   for(let i=2; i<process.argv.length; i++){
+     if( process.argv[i].indexOf('--') == 0){
+        arrOption.push(process.argv[i])
+     }else{
+        titanic = process.argv[i]
+     }
+   }
+ // console.log(arrOption)
+   mdLinksFinal(titanic)
+   .then(data =>{
+     if( arrOption.indexOf('--validate') != -1){
+        mdLinks.print(data)
+     }
+     if (arrOption.indexOf('--stats') !== -1){
+        mdLinks.printStats(data)
+     }
+   })
+    
+}
+
+
+
+
+
+
+
+
+module.exports = mdLinksFinal

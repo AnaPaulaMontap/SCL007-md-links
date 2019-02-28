@@ -1,3 +1,21 @@
+const mdlinks = require('./index.js')
+
+mdlinks('./README.md')
+.then(data =>{
+    console.log(data)
+}).catch(error => {
+    console.log(error.message);
+    console.error(error.stack)
+})
+
+
+
+
+
+
+
+
+
 /*
 let fs = require("fs")
 let path = require("path")
@@ -51,9 +69,84 @@ mdlinks(argumentsUser)
 */
 
 
-let fetch = require('node-fetch')
 
-fetch('https://otra-cosa.net/algun-doc.html')
-.then(data=>{
-    console.log(data)
+  
+  /*
+  .then(data3=>{
+    return data3.map(element =>{
+      return mdLinks.validation(element) 
+    }) 
+  })
+  .then(data4=>{
+    
+   return data4.filter(element =>{
+     return element !== undefined
+   })
+  })
+  .then(data5 =>{
+    console.log(data5)
+  })
+
+
+*/
+         /*
+    if (raquel[i].url.substring(0, 5) == 'https') {
+      https.get(raquel[i].url, (response) => {
+      //console.log(raquel[i].url)
+        if (response.statusCode === 200) {
+          
+          //console.log('linea:'+raquel.line +' '+'url:'+ link.url +' '+ chalk.green (`Status: OK`))
+           raquel[i].validate = 'OK'
+           //console.log(raquel[i].validate)
+        }
+      }).on('error', (e) => {
+        //console.log(link.line +' '+ link.url +' '+ chalk.red(`Error: ${e.message}`)
+        raquel[i].validate = 'ERROR'
+        
+      
+      })
+    } else if(raquel[i].url.substring(0, 4) == 'http'){
+      http.get(raquel[i].url, (response) => {
+        if (response.statusCode === 200) {
+          //console.log('linea:'+link.line +' '+'url:'+ link.url +' '+ chalk.green (`Status: OK`))
+          raquel[i].validate = 'OK'
+        }
+        
+      }).on('error', (e) => {
+        //console.log( link.line +' '+ link.url +' '+ chalk.red(`Error: ${e.message}`));
+        raquel[i].validate = 'ERROR'
+      })
+    }else{
+      raquel[i].validate = 'null'
+    }
+   
+  //}  
+.then (dataVerify =>{
+ mdLinks.validation(dataVerify)
 })
+.then(dataResult =>{
+  console.log(dataResult)
+})
+.catch(error =>{
+  console.error (error.message)
+})
+*/
+
+/*
+mdLinks.urlExtractor=(linkArr)=>{
+return new Promise ((resolve, reject)=>{  
+  
+ let pruebaurl= linkArr.map(element =>{
+    return element.url
+  })
+
+  for(i=0; i<pruebaurl.length; i++){
+   if(pruebaurl[i].substring(0,4) !== 'http' ){
+     return resolve (pruebaurl[i].validate = pruebaurl[i] +"/"+ 'NO CORRESPONDE A URL')
+   }
+   else{
+    return resolve(pruebaurl[i])
+   }   
+  }//return reject(pruebaurl[i]='error')
+})
+} */
