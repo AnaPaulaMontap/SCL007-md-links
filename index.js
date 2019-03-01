@@ -11,7 +11,6 @@ let argumentsUser = process.argv[2]
 const mdLinks= {}
 
 
-
 mdLinks.readDirectory = (argumentsUser) => {
   return new Promise((resolve, reject) => {
     fs.lstat(argumentsUser, (err, stats) => {
@@ -59,6 +58,9 @@ mdLinks.fileExtractor =(arr) =>{
        let file2 = file.filter(element => {
          if(path.extname(element)===".md"){
            return element
+         }
+         else{
+           return []
          }          
        })
        return resolve(file2)  
@@ -156,7 +158,6 @@ mdLinks.readDirectory(argumentsUser)
       
   }).catch(error => {
     console.log(error.message);
-    console.error(error.stack)
   })
 })
 }
@@ -209,4 +210,7 @@ if(require.main === module){
    })
     
 }
-module.exports = mdLinksFinal
+module.exports = {
+  mdlinks : mdLinksFinal,
+  helpers : mdLinks
+};
