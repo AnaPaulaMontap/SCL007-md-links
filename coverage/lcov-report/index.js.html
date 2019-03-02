@@ -20,24 +20,24 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">70.19% </span>
+        <span class="strong">75.23% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>73/104</span>
+        <span class='fraction'>82/109</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">50% </span>
+        <span class="strong">43.33% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>15/30</span>
+        <span class='fraction'>13/30</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">77.78% </span>
+        <span class="strong">83.33% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>28/36</span>
+        <span class='fraction'>30/36</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">69.9% </span>
+        <span class="strong">75% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>72/103</span>
+        <span class='fraction'>81/108</span>
       </div>
     </div>
   </div>
@@ -258,7 +258,11 @@
 213
 214
 215
-216</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+216
+217
+218
+219
+220</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -363,16 +367,16 @@
 <span class="cline-any cline-yes">49x</span>
 <span class="cline-any cline-yes">49x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">48x</span>
-<span class="cline-any cline-yes">46x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -429,19 +433,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -578,16 +586,16 @@ mdLinks.validation = (linkArr) =&gt; {
     <span class="missing-if-branch" title="else path not taken" >E</span>if(linkArr.url.substring(0,4) === 'http') {         
      fetch(linkArr.url)
       .then( data =&gt; {
-          if(data.status === 200){
+          <span class="missing-if-branch" title="else path not taken" >E</span>if(data.status === 200){
             return resolve ({...linkArr, validate : 'OK'})
-          }else <span class="missing-if-branch" title="else path not taken" >E</span>if (data.status !== 200){
-            return resolve ({...linkArr, validate :'URL INVALIDA'})
+          }else <span class="cstat-no" title="statement not covered" >if (data.status !== 200){</span>
+<span class="cstat-no" title="statement not covered" >            return resolve ({...linkArr, validate :'URL INVALIDA'})</span>
           }else{
 <span class="cstat-no" title="statement not covered" >            return resolve ({...linkArr, validate : 'NO CORRESPONDE A URL VALIDA'})</span>
           }        
       })
-      .catch(error =&gt;{
-          return resolve({...linkArr, validate :'NO CORRESPONDE A URL VALIDA'})
+      .catch(<span class="fstat-no" title="function not covered" >er</span>ror =&gt;{
+<span class="cstat-no" title="statement not covered" >          return resolve({...linkArr, validate :'NO CORRESPONDE A URL VALIDA'})</span>
       }) 
     }else{
 <span class="cstat-no" title="statement not covered" >      return resolve ({...linkArr, validate :'NO CORRESPONDE A URL'})</span>
@@ -642,21 +650,25 @@ mdLinks.print = <span class="fstat-no" title="function not covered" >(l</span>in
 <span class="cstat-no" title="statement not covered" >    console.log(chalk.magenta(link[i].file), chalk.green(link[i].line), chalk.cyan(link[i].url), chalk.blue(link[i].validate))</span>
   }
 }
-mdLinks.printStats = <span class="fstat-no" title="function not covered" >(l</span>ink) =&gt;{
+mdLinks.printStats = (link) =&gt;{
   
-  let totalLinks = <span class="cstat-no" title="statement not covered" >link.length;</span>
-  let linksOk = <span class="cstat-no" title="statement not covered" >link.filter(<span class="fstat-no" title="function not covered" >el</span>ement=&gt;{</span>
-<span class="cstat-no" title="statement not covered" >    return element.validate ==="OK"</span>
+  let totalLinks = link.length;
+  let linksOk = link.filter(element=&gt;{
+    return element.validate ==="OK"
   }).length;
-  let linksFail = <span class="cstat-no" title="statement not covered" >totalLinks - linksOk;</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >  console.log(chalk.magenta('Total Links:',totalLinks,'\n','Links Ok:',linksOk,'\n','Broken Links:',linksFail))</span>
+  let linksFail = totalLinks - linksOk;
+  let result = chalk.magenta('Total Links:',totalLinks,'\n','Links Ok:',linksOk,'\n','Broken Links:',linksFail)
+  console.log(result);
+  return result
   
 }
-mdLinks.printText = <span class="fstat-no" title="function not covered" >(l</span>ink) =&gt;{  
-<span class="cstat-no" title="statement not covered" >  for(let i=0; i&lt;link.length; i++){  </span>
-<span class="cstat-no" title="statement not covered" >    console.log(chalk.blue(link[i].line), chalk.cyan(link[i].url), chalk.green(link[i].text))</span>
+mdLinks.printText = (link) =&gt;{  
+  let resultText = []
+  for(let i=0; i&lt;link.length; i++){     
+    resultText.push(link[i].text)
+   console.log(chalk.blue(link[i].line), chalk.cyan(link[i].url), chalk.green(link[i].text))
   }
+  return resultText
 }
 &nbsp;
 <span class="missing-if-branch" title="if path not taken" >I</span>if(require.main === module){
@@ -694,7 +706,7 @@ module.exports = {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Fri Mar 01 2019 18:10:38 GMT-0300 (GMT-03:00)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sat Mar 02 2019 15:01:15 GMT-0300 (GMT-03:00)
 </div>
 </div>
 <script src="prettify.js"></script>

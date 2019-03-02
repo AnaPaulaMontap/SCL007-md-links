@@ -1,4 +1,4 @@
-const mdlinks = require('./index.js')
+const mdlinks = require('./index.js').mdlinks
 
 mdlinks('./README.md')
 .then(data =>{

@@ -174,14 +174,18 @@ mdLinks.printStats = (link) =>{
     return element.validate ==="OK"
   }).length;
   let linksFail = totalLinks - linksOk;
-
-  console.log(chalk.magenta('Total Links:',totalLinks,'\n','Links Ok:',linksOk,'\n','Broken Links:',linksFail))
+  let result = chalk.magenta('Total Links:',totalLinks,'\n','Links Ok:',linksOk,'\n','Broken Links:',linksFail)
+  console.log(result);
+  return result
   
 }
 mdLinks.printText = (link) =>{  
-  for(let i=0; i<link.length; i++){  
-    console.log(chalk.blue(link[i].line), chalk.cyan(link[i].url), chalk.green(link[i].text))
+  let resultText = []
+  for(let i=0; i<link.length; i++){     
+    resultText.push(link[i].text)
+   console.log(chalk.blue(link[i].line), chalk.cyan(link[i].url), chalk.green(link[i].text))
   }
+  return resultText
 }
 
 if(require.main === module){
