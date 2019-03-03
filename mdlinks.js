@@ -1,6 +1,6 @@
 const mdlinks = require('./index.js').mdlinks
 
-mdlinks('./README.md')
+mdlinks('./README-lab.md')
 .then(data =>{
     console.log(data)
 }).catch(error => {
